@@ -244,6 +244,23 @@ void Game::processCommand(std::string command)
     {
         handleDrop(command.substr(5));
     }
+    else if (command.substr(0, 4) == "put ")
+    {
+    std::string input = command.substr(4);
+
+    size_t space = input.find(' ');
+
+    if (space == std::string::npos)
+    {
+        std::cout << "Usage: put <item> <container>\n";
+        return;
+    }
+
+    std::string itemName = input.substr(0, space);
+    std::string containerName = input.substr(space + 1);
+
+    handlePut(itemName, containerName);
+    }
     else if (command == "help")
     {
         std::cout << "Commands:\n";
@@ -251,6 +268,7 @@ void Game::processCommand(std::string command)
         std::cout << "- go north/south/east/west/up/down\n";
         std::cout << "- take item\n";
         std::cout << "- drop item\n";
+        std::cout << "- put <item> <container>\n";
         std::cout << "- inventory\n";
         std::cout << "- quit\n";
     }
@@ -353,9 +371,9 @@ bool Game::checkWinCondition()
     Player* player = world.getPlayer();
     Room* currentRoom = player->getCurrentRoom();
 
-    if (currentRoom->getName() == "Master Bedroom")
+    if (currentRoom->getName() != "Master Bedroom")
     {
-        return true;
+        return false;
     }
 
     std::vector<Item*> inventory = player->getInventory();
@@ -367,6 +385,7 @@ bool Game::checkWinCondition()
             return true;
         }
     }
+
     return false;
 }
 
@@ -382,4 +401,42 @@ void Game::endGame()
     std::cout << "THE END\n";
 
     this->running = false;
+}
+
+void Game::handlePut(std::string itemName, std::string containerName)
+{
+    Player* player = world.getPlayer();
+
+    Item* item = player->removeItem(itemName);
+
+    if (item == nullptr)
+    {
+        std::cout << "You do not have a " << itemName << ".\n";
+        return;
+    }
+
+    Item* container = nullptr;
+    std::vector<Item*> inventory = player->getInventory();
+
+    for (Item* inventoryItem : inventory)
+    {
+        if (inventoryItem->getName() == containerName)
+        {
+            container = inventoryItem;
+            break;
+        }
+    }
+
+    if (container == nullptr)
+    {
+        player->addItem(item);
+        std::cout << "You do not have a " << containerName << ".\n";
+        return;
+    }
+
+    container->addItem(item);
+
+    std::cout << "You put the " << item->getName()
+              << " into the " << container->getName()
+              << ".\n";
 }
