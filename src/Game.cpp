@@ -26,12 +26,13 @@ void Game::showIntro()
 
 void Game::createWorld()
 {
-    Room* outside = new Room("Outside Mansion", "You stand before a tall abandoned mansion. The front door waits in silence.");
+    Room* outsidePorch = new Room("Outside Porch", "You stand on the porch of the abandoned mansion.");
     Room* entranceHall = new Room("Entrance Hall", "A dark hall filled with dust, old portraits, and eerie air.");
     Room* library = new Room("Library", "Old books cover the walls. A strange sadness fills the room.");
     Room* kitchen = new Room("Kitchen", "Rusty pans hang from the ceiling. Something smells rotten.");
-    Room* attic = new Room("Attic", "The attic is full of forgotten objects and moonlight.");
+    Room* office = new Room("Office", "An old office with a broken desk and scattered papers.");
     Room* masterBedroom = new Room("Master Bedroom", "A locked door stands before you. The air feels heavy and cold.");
+    Room* secondFloor = new Room("Second Floor", "The stairs end in a narrow hallway.");
 
     Item* lantern = new Item("lantern", "An old lantern. It helps you see inside the mansion.");
     Item* backpack = new Item("backpack", "A worn backpack that can store items.");
@@ -39,27 +40,88 @@ void Game::createWorld()
     Item* musicBox = new Item("music box", "A delicate music box. It's melody feels strangely familiar.");
     Item* key = new Item("key", "A big bronze key. You are not sure what it opens.");
 
-    outside->addItem(lantern);
+    outsidePorch->addItem(lantern);
     entranceHall->addItem(backpack);
     library->addItem(map);
-    attic->addItem(musicBox);
+    office->addItem(musicBox);
     kitchen->addItem(key);
 
-    Player* player = new Player("Player", "A brave visitor trying to help the sad ghost.", outside);
+    Player* player = new Player(
+    "Ghost Hunter",
+    "You are a ghost hunter hired by the new owners to help the sad ghost find peace.",
+    outsidePorch);
 
+    //Player
     world.setPlayer(player);
-
-    world.addEntity(outside);
+    
+    //Rooms
+    world.addEntity(outsidePorch);
     world.addEntity(entranceHall);
     world.addEntity(library);
     world.addEntity(kitchen);
-    world.addEntity(attic);
+    world.addEntity(office);
     world.addEntity(masterBedroom);
+    world.addEntity(secondFloor);
 
+    //Exits
+    world.addEntity(porchToHall);
+    world.addEntity(hallToPorch);
+    world.addEntity(hallToKitchen);
+    world.addEntity(kitchenToHall);
+    world.addEntity(hallToOffice);
+    world.addEntity(officeToHall);
+    world.addEntity(hallToSecondFloor);
+    world.addEntity(secondFloorToHall);
+    world.addEntity(secondFloorToLibrary);
+    world.addEntity(libraryToSecondFloor);
+    world.addEntity(secondFloorToBedroom);
+    world.addEntity(bedroomToSecondFloor);
+
+    //Items
     world.addEntity(lantern);
     world.addEntity(backpack);
     world.addEntity(map);
     world.addEntity(musicBox);
     world.addEntity(key);
     world.addEntity(player);
+
+   Exit* porchToHall = new Exit("Front Door", "The old wooden door leads into the mansion.", Direction::NORTH, outsidePorch, entranceHall);
+   Exit* hallToPorch = new Exit("Front Door", "The door leads back outside.", Direction::SOUTH, entranceHall, outsidePorch);
+
+   Exit* hallToKitchen = new Exit("Kitchen Door", "A swinging wooden door leads into the kitchen.", Direction::EAST, entranceHall, kitchen);
+   Exit* kitchenToHall = new Exit("Kitchen Door", "The kitchen door leads back to the entrance hall.", Direction::WEST, kitchen, entranceHall);
+
+   Exit* hallToOffice = new Exit("Office Door", "A cracked wooden door leads into the office.", Direction::WEST, entranceHall, office);
+   Exit* officeToHall = new Exit("Office Door", "The office door leads back to the entrance hall.", Direction::EAST, office, entranceHall);
+
+   Exit* hallToSecondFloor = new Exit("Stairs", "The staircase leads to the second floor.", Direction::NORTH, entranceHall, secondFloor);
+   Exit* secondFloorToHall = new Exit("Stairs", "The stairs lead back down to the entrance hall.", Direction::SOUTH, secondFloor, entranceHall);
+
+   Exit* secondFloorToLibrary = new Exit("Library Door", "A tall door leads into the library.", Direction::WEST, secondFloor, library);
+   Exit* libraryToSecondFloor = new Exit("Library Door", "The library door leads back to the second floor hallway.", Direction::EAST, library, secondFloor);
+
+   Exit* secondFloorToBedroom = new Exit("Master Bedroom Door", "A large locked door blocks your way.", Direction::EAST, secondFloor, masterBedroom);
+   Exit* bedroomToSecondFloor = new Exit("Master Bedroom Door", "The door leads back to the second floor hallway.", Direction::WEST, masterBedroom, secondFloor);
+
+secondFloorToBedroom->setLocked(true);
+
+   outsidePorch->addExit(porchToHall);
+   entranceHall->addExit(hallToPorch);
+   entranceHall->addExit(hallToKitchen);
+   entranceHall->addExit(hallToOffice);
+   entranceHall->addExit(hallToSecondFloor);
+
+   kitchen->addExit(kitchenToHall);
+   office->addExit(officeToHall);
+
+   secondFloor->addExit(secondFloorToHall);
+   secondFloor->addExit(secondFloorToLibrary);
+   secondFloor->addExit(secondFloorToBedroom);
+
+   library->addExit(libraryToSecondFloor);
+   masterBedroom->addExit(bedroomToSecondFloor);
+
+
+
+    
 }
