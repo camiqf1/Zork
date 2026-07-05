@@ -1,12 +1,14 @@
 #include "Game.h"
 #include <iostream>
+#include <string>
 
 
 Game::Game()
  {
-    this ->createWorld();
-}
+    this->createWorld();
+ }  
 
+//World intro
 void Game::showIntro()
 {
     std::cout << "=========================================\n";
@@ -24,6 +26,7 @@ void Game::showIntro()
     std::cout << "Type 'help' to see available commands.\n\n";
 }
 
+//World layout
 void Game::createWorld()
 {
     Room* outsidePorch = new Room("Outside Porch", "You stand on the porch of the abandoned mansion.");
@@ -37,7 +40,7 @@ void Game::createWorld()
     Item* lantern = new Item("lantern", "An old lantern. It helps you see inside the mansion.");
     Item* backpack = new Item("backpack", "A worn backpack that can store items.");
     Item* map = new Item("map", "A faded map of the mansion.");
-    Item* musicBox = new Item("music box", "A delicate music box. It's melody feels strangely familiar.");
+    Item* musicBox = new Item("music box", "A delicate music box. Its melody feels strangely familiar.");
     Item* key = new Item("key", "A big bronze key. You are not sure what it opens.");
 
     outsidePorch->addItem(lantern);
@@ -46,13 +49,51 @@ void Game::createWorld()
     office->addItem(musicBox);
     kitchen->addItem(key);
 
+    //Player
     Player* player = new Player(
     "Ghost Hunter",
     "You are a ghost hunter hired by the new owners to help the sad ghost find peace.",
     outsidePorch);
 
-    //Player
     world.setPlayer(player);
+
+   //Create Exits 
+   Exit* porchToHall = new Exit("Front Door", "The old wooden door leads into the mansion.", Direction::NORTH, outsidePorch, entranceHall);
+   Exit* hallToPorch = new Exit("Front Door", "The door leads back outside.", Direction::SOUTH, entranceHall, outsidePorch);
+
+   Exit* hallToKitchen = new Exit("Kitchen Door", "A swinging wooden door leads into the kitchen.", Direction::EAST, entranceHall, kitchen);
+   Exit* kitchenToHall = new Exit("Kitchen Door", "The kitchen door leads back to the entrance hall.", Direction::WEST, kitchen, entranceHall);
+
+   Exit* hallToOffice = new Exit("Office Door", "A cracked wooden door leads into the office.", Direction::WEST, entranceHall, office);
+   Exit* officeToHall = new Exit("Office Door", "The office door leads back to the entrance hall.", Direction::EAST, office, entranceHall);
+
+   Exit* hallToSecondFloor = new Exit("Stairs", "The staircase leads to the second floor.", Direction::NORTH, entranceHall, secondFloor);
+   Exit* secondFloorToHall = new Exit("Stairs", "The stairs lead back down to the entrance hall.", Direction::SOUTH, secondFloor, entranceHall);
+
+   Exit* secondFloorToLibrary = new Exit("Library Door", "A tall door leads into the library.", Direction::WEST, secondFloor, library);
+   Exit* libraryToSecondFloor = new Exit("Library Door", "The library door leads back to the second floor hallway.", Direction::EAST, library, secondFloor);
+
+   Exit* secondFloorToBedroom = new Exit("Master Bedroom Door", "A large locked door blocks your way.", Direction::EAST, secondFloor, masterBedroom);
+   Exit* bedroomToSecondFloor = new Exit("Master Bedroom Door", "The door leads back to the second floor hallway.", Direction::WEST, masterBedroom, secondFloor);
+
+   secondFloorToBedroom->setLocked(true);
+    
+   //Exits
+   outsidePorch->addExit(porchToHall);
+   entranceHall->addExit(hallToPorch);
+   entranceHall->addExit(hallToKitchen);
+   entranceHall->addExit(hallToOffice);
+   entranceHall->addExit(hallToSecondFloor);
+
+   kitchen->addExit(kitchenToHall);
+   office->addExit(officeToHall);
+
+   secondFloor->addExit(secondFloorToHall);
+   secondFloor->addExit(secondFloorToLibrary);
+   secondFloor->addExit(secondFloorToBedroom);
+
+   library->addExit(libraryToSecondFloor);
+   masterBedroom->addExit(bedroomToSecondFloor);
     
     //Rooms
     world.addEntity(outsidePorch);
@@ -85,43 +126,54 @@ void Game::createWorld()
     world.addEntity(key);
     world.addEntity(player);
 
-   Exit* porchToHall = new Exit("Front Door", "The old wooden door leads into the mansion.", Direction::NORTH, outsidePorch, entranceHall);
-   Exit* hallToPorch = new Exit("Front Door", "The door leads back outside.", Direction::SOUTH, entranceHall, outsidePorch);
+}
 
-   Exit* hallToKitchen = new Exit("Kitchen Door", "A swinging wooden door leads into the kitchen.", Direction::EAST, entranceHall, kitchen);
-   Exit* kitchenToHall = new Exit("Kitchen Door", "The kitchen door leads back to the entrance hall.", Direction::WEST, kitchen, entranceHall);
+void Game::start()
+{
+    this->showIntro();
+    this->showCurrentRoom();
 
-   Exit* hallToOffice = new Exit("Office Door", "A cracked wooden door leads into the office.", Direction::WEST, entranceHall, office);
-   Exit* officeToHall = new Exit("Office Door", "The office door leads back to the entrance hall.", Direction::EAST, office, entranceHall);
+    std::string command;
 
-   Exit* hallToSecondFloor = new Exit("Stairs", "The staircase leads to the second floor.", Direction::NORTH, entranceHall, secondFloor);
-   Exit* secondFloorToHall = new Exit("Stairs", "The stairs lead back down to the entrance hall.", Direction::SOUTH, secondFloor, entranceHall);
+    while (this->running)
+    {
+        std::cout << "\n> ";
+        std::getline(std::cin, command);
 
-   Exit* secondFloorToLibrary = new Exit("Library Door", "A tall door leads into the library.", Direction::WEST, secondFloor, library);
-   Exit* libraryToSecondFloor = new Exit("Library Door", "The library door leads back to the second floor hallway.", Direction::EAST, library, secondFloor);
+        this->processCommand(command);
 
-   Exit* secondFloorToBedroom = new Exit("Master Bedroom Door", "A large locked door blocks your way.", Direction::EAST, secondFloor, masterBedroom);
-   Exit* bedroomToSecondFloor = new Exit("Master Bedroom Door", "The door leads back to the second floor hallway.", Direction::WEST, masterBedroom, secondFloor);
+        if (this->checkWinCondition())
+        {
+            this->endGame();
+        }
+    }
+}
 
-secondFloorToBedroom->setLocked(true);
+void Game::showCurrentRoom()
+{
+    Player* player = world.getPlayer();
+    Room* currentRoom = player->getCurrentRoom();
 
-   outsidePorch->addExit(porchToHall);
-   entranceHall->addExit(hallToPorch);
-   entranceHall->addExit(hallToKitchen);
-   entranceHall->addExit(hallToOffice);
-   entranceHall->addExit(hallToSecondFloor);
+    std::cout << "\nYou are in: " << currentRoom->getName() << "\n";
+    std::cout << currentRoom->getDescription() << "\n";
 
-   kitchen->addExit(kitchenToHall);
-   office->addExit(officeToHall);
+    std::vector<Item*> items = currentRoom->getItems();
+    if (!items.empty())
+    {
+        std::cout << "You see a flashlight:\n";
+        for (Item* item : items)
+        {
+            std::cout << "- " << item->getName() << ": " << item->getDescription() << "\n";
+        }
+    }
 
-   secondFloor->addExit(secondFloorToHall);
-   secondFloor->addExit(secondFloorToLibrary);
-   secondFloor->addExit(secondFloorToBedroom);
-
-   library->addExit(libraryToSecondFloor);
-   masterBedroom->addExit(bedroomToSecondFloor);
-
-
-
-    
+    std::vector<Exit*> exits = currentRoom->getExits();
+    if (!exits.empty())
+    {
+        std::cout << "Exits:\n";
+        for (Exit* exit : exits)
+        {
+            std::cout << "- " << exit->getName() << ": " << exit->getDescription() << "\n";
+        }
+    }
 }
