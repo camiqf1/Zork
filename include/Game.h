@@ -20,6 +20,8 @@ class Game
         World world;
         bool running = true;
         bool checkWinCondition();
+
+        std::string directionToString(Direction direction);
         
         void createWorld();
         void showIntro();

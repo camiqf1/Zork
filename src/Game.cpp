@@ -158,22 +158,63 @@ void Game::showCurrentRoom()
     std::cout << currentRoom->getDescription() << "\n";
 
     std::vector<Item*> items = currentRoom->getItems();
-    if (!items.empty())
-    {
-        std::cout << "You see a flashlight:\n";
-        for (Item* item : items)
-        {
-            std::cout << "- " << item->getName() << ": " << item->getDescription() << "\n";
-        }
-    }
+   if (items.empty())
+{
+    std::cout << "There are no items here.\n";
+}
+else
+{
+    std::cout << "You see:\n";
 
-    std::vector<Exit*> exits = currentRoom->getExits();
-    if (!exits.empty())
+    for (Item* item : items)
     {
-        std::cout << "Exits:\n";
-        for (Exit* exit : exits)
-        {
-            std::cout << "- " << exit->getName() << ": " << exit->getDescription() << "\n";
-        }
+        std::cout << "- " << item->getName()
+                  << ": "
+                  << item->getDescription()
+                  << "\n";
     }
 }
+
+    std::vector<Exit*> exits = currentRoom->getExits();
+   if (exits.empty())
+{
+    std::cout << "There are no exits.\n";
+}
+else
+{
+    std::cout << "Exits:\n";
+
+    for (Exit* exit : exits)
+{
+    std::cout << "- "
+              << directionToString(exit->getDirection())
+              << " ("
+              << exit->getName()
+              << ")\n";
+}
+}
+}
+
+//Directions
+std::string Game::directionToString(Direction direction)
+{
+    switch (direction)
+    {
+        case Direction::NORTH:
+            return "north";
+        case Direction::SOUTH:
+            return "south";
+        case Direction::EAST:
+            return "east";
+        case Direction::WEST:
+            return "west";
+        case Direction::UP:
+            return "up";
+        case Direction::DOWN:
+            return "down";
+        default:
+            return "unknown";
+    }
+}
+
+void Game::processCommand
