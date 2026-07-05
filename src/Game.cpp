@@ -347,3 +347,39 @@ void Game::handleGo(std::string direction)
 
     std::cout << "You can't go " << direction << " from here.\n";
 }
+
+bool Game::checkWinCondition()
+{
+    Player* player = world.getPlayer();
+    Room* currentRoom = player->getCurrentRoom();
+
+    if (currentRoom->getName() == "Master Bedroom")
+    {
+        return true;
+    }
+
+    std::vector<Item*> inventory = player->getInventory();
+
+    for (Item* item : inventory)
+    {
+        if (item->getName() == "music box")
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+void Game::endGame()
+{
+    std::cout << "\nThe music box begins to play...\n";
+    std::cout << "The sad ghost appears before you.\n";
+    std::cout << "Its sorrow fades into a peaceful smile.\n";
+    std::cout << "\"Thank you,\" it whispers.\n";
+    std::cout << "The ghost disappears into the light.\n\n";
+    std::cout << "You helped the sad ghost find peace.\n";
+    std::cout << "THE END\n";
+
+    this->running = false;
+}
