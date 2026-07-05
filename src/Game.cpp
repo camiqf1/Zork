@@ -217,4 +217,133 @@ std::string Game::directionToString(Direction direction)
     }
 }
 
-void Game::processCommand
+void Game::processCommand(std::string command)
+{
+    if (command == "look")
+    {
+        handleLook();
+    }
+    else if (command == "inventory")
+    {
+        handleInventory();
+    }
+    else if (command == "quit")
+    {
+        running = false;
+        std::cout << "You leave the mansion behind.\n";
+    }
+     else if (command.substr(0, 3) == "go ")
+    {
+        handleGo(command.substr(3));
+    }
+    else if (command.substr(0, 5) == "take ")
+    {
+        handleTake(command.substr(5));
+    }
+    else if (command.substr(0, 5) == "drop ")
+    {
+        handleDrop(command.substr(5));
+    }
+    else if (command == "help")
+    {
+        std::cout << "Commands:\n";
+        std::cout << "- look\n";
+        std::cout << "- go north/south/east/west/up/down\n";
+        std::cout << "- take item\n";
+        std::cout << "- drop item\n";
+        std::cout << "- inventory\n";
+        std::cout << "- quit\n";
+    }
+    else
+    {
+        std::cout << "I don't understand that command.\n";
+    }
+}
+
+void Game::handleLook()
+{
+    showCurrentRoom();
+}
+
+void Game::handleInventory()
+{
+    Player* player = world.getPlayer();
+    std::vector<Item*> inventory = player->getInventory();
+
+    if (inventory.empty())
+    {
+        std::cout << "Your inventory is empty.\n";
+    }
+    else
+    {
+        std::cout << "Inventory:\n";
+        for (Item* item : inventory)
+        {
+            std::cout << "- "
+                      << item->getName() 
+                      << ": " 
+                      << item->getDescription() 
+                      << "\n";
+        }
+    }
+}
+
+void Game::handleTake(std::string itemName)
+{
+    Player* player = world.getPlayer();
+    Room* currentRoom = player->getCurrentRoom();
+
+    Item* item = currentRoom->removeItem(itemName);
+
+    if (item == nullptr)
+    {
+        std::cout << "There is no " << itemName << " here.\n";
+        return;
+    }
+        player->addItem(item);
+        std::cout << "You picked up the " << item->getName() << ".\n";
+}
+
+void Game::handleDrop(std::string itemName)
+{
+    Player* player = world.getPlayer();
+    Room* currentRoom = player->getCurrentRoom();
+
+    Item* item = player->removeItem(itemName);
+
+    if (item == nullptr)
+    {
+        std::cout << "You do not have a " << itemName << ".\n";
+        return;
+    }
+
+    currentRoom->addItem(item);
+    std::cout << "You dropped the " << item->getName() << ".\n";
+}
+
+void Game::handleGo(std::string direction)
+{
+    Player* player = world.getPlayer();
+    Room* currentRoom = player->getCurrentRoom();
+
+    std::vector<Exit*> exits = currentRoom->getExits();
+
+    for (Exit* exit : exits)
+    {
+        if (directionToString(exit->getDirection()) == direction)
+        {
+            if (exit->isLocked())
+            {
+                std::cout << "The " << exit->getName() << " is locked.\n";
+                std::cout << "You need a key to open it.\n";
+                return;
+            }
+
+            player->setCurrentRoom(exit->getDestinationRoom());
+            showCurrentRoom();
+            return;
+        }
+    }
+
+    std::cout << "You can't go " << direction << " from here.\n";
+}
