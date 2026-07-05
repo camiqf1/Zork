@@ -1,4 +1,5 @@
 #include "Room.h"
+#include "Exit.h"
 
 Room::Room(std::string name, std::string description)
     : Entity(name, description)
@@ -13,6 +14,16 @@ void Room::addItem(Item* item)
 std::vector<Item*> Room::getItems()
 {
     return items;
+}
+
+void Room::addExit(Exit* exit)
+{
+    this->exits.push_back(exit);
+}
+
+std::vector<Exit*> Room::getExits()
+{
+    return this->exits;
 }
 
 void Room::update()
@@ -38,4 +49,4 @@ Item* Room::removeItem(std::string name)
     }
 
     return nullptr; // Return nullptr if the item is not found
-    }
+}
