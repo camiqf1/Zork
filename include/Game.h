@@ -35,6 +35,7 @@ class Game
         void handleGo(std::string direction);
 
         void handlePut(std::string itemName, std::string containerName);
+        void handleUse(std::string itemName);
 
         void endGame();
 };

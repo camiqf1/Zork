@@ -277,6 +277,7 @@ void Game::processCommand(std::string command)
         std::cout << "- go north/south/east/west/up/down\n";
         std::cout << "- take item\n";
         std::cout << "- drop item\n";
+        std::cout << "- use item\n"; 
         std::cout << "- put <item> <container>\n";
         std::cout << "- inventory\n";
         std::cout << "- quit\n";
