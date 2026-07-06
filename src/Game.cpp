@@ -325,6 +325,7 @@ void Game::handleInventory()
     }
 }
 }
+}
 
 void Game::handleTake(std::string itemName)
 {
