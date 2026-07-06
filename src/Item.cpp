@@ -1,5 +1,6 @@
 #include "Item.h"
 
+//Constructor for the Item class, initializes the item with a name and description
 Item::Item(std::string name, std::string description)
     : Entity(name, description)
 {

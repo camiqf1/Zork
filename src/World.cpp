@@ -1,7 +1,6 @@
 #include "World.h"
 
 //Constructor for the World class, initializes the world with no entities and no player
-
 World::World()
 {
     this->entities = std::vector<Entity*>();

@@ -1,6 +1,7 @@
 #include "Room.h"
 #include "Exit.h"
 
+//Constructor for the Room class, initializes the room with a name and description
 Room::Room(std::string name, std::string description)
     : Entity(name, description)
 {

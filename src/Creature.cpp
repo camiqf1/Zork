@@ -1,5 +1,6 @@
 #include "Creature.h"
 
+//Constructor for the Creature class, initializes the creature with a name and description
 Creature::Creature(std::string name, std::string description)
     : Entity(name, description)
 {
@@ -7,5 +8,5 @@ Creature::Creature(std::string name, std::string description)
 
 void Creature::update()
 {
-    // Update the creature's state or perform any necessary actions
+    
 }
