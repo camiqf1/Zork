@@ -23,7 +23,15 @@ void Game::showIntro()
     std::cout << "Unlock the master bedroom,\n";
     std::cout << "and help the ghost find peace.\n\n";
 
-    std::cout << "Type 'help' to see available commands.\n\n";
+    std::cout << "Available commands:\n";
+    std::cout << "- look\n";
+    std::cout << "- go <direction>\n";
+    std::cout << "- take <item>\n";
+    std::cout << "- drop <item>\n";
+    std::cout << "- put <item> <container>\n";
+    std::cout << "- inventory\n";
+    std::cout << "- help\n";
+    std::cout << "- quit\n\n";
 }
 
 //World layout
