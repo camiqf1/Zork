@@ -27,6 +27,7 @@ void Game::showIntro()
     std::cout << "- look\n";
     std::cout << "- go <direction>\n";
     std::cout << "- take <item>\n";
+    std::cout << "- use <item>\n";
     std::cout << "- drop <item>\n";
     std::cout << "- put <item> <container>\n";
     std::cout << "- inventory\n";
@@ -48,7 +49,7 @@ void Game::createWorld()
     Item* lantern = new Item("lantern", "An old lantern. It helps you see inside the mansion.");
     Item* backpack = new Item("backpack", "A worn backpack that can store items.");
     Item* map = new Item("map", "A faded map of the mansion.");
-    Item* musicBox = new Item("music box", "A delicate music box. Its melody feels strangely familiar.");
+    Item* musicBox = new Item("musicbox", "A delicate music box. Its melody feels strangely familiar.");
     Item* key = new Item("key", "A big bronze key. You are not sure what it opens.");
 
     outsidePorch->addItem(lantern);
@@ -150,10 +151,6 @@ void Game::start()
 
         this->processCommand(command);
 
-        if (this->checkWinCondition())
-        {
-            this->endGame();
-        }
     }
 }
 
@@ -247,6 +244,10 @@ void Game::processCommand(std::string command)
     else if (command.substr(0, 5) == "take ")
     {
         handleTake(command.substr(5));
+    }
+    else if (command.substr(0, 4) == "use ")
+    {
+        handleUse(command.substr(4));
     }
     else if (command.substr(0, 5) == "drop ")
     {
@@ -374,43 +375,6 @@ void Game::handleGo(std::string direction)
     std::cout << "You can't go " << direction << " from here.\n";
 }
 
-bool Game::checkWinCondition()
-{
-    Player* player = world.getPlayer();
-    Room* currentRoom = player->getCurrentRoom();
-
-    if (currentRoom->getName() != "Master Bedroom")
-    {
-        return false;
-    }
-
-    std::vector<Item*> inventory = player->getInventory();
-
-    for (Item* item : inventory)
-    {
-        if (item->getName() == "music box")
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-void Game::endGame()
-{
-    std::cout << "\nThe music box begins to play...\n";
-    std::cout << "The sad ghost appears before you.\n";
-    std::cout << "Its sorrow fades into a peaceful smile.\n";
-    std::cout << "\"Thank you,\" it whispers.\n";
-    std::cout << "The ghost disappears into the light.\n\n";
-    std::cout << "You helped the sad ghost find peace.\n";
-    std::cout << "THE END\n";
-
-    this->running = false;
-}
-
 void Game::handlePut(std::string itemName, std::string containerName)
 {
     Player* player = world.getPlayer();
@@ -448,3 +412,102 @@ void Game::handlePut(std::string itemName, std::string containerName)
               << " into the " << container->getName()
               << ".\n";
 }
+
+void Game::handleUse(std::string itemName)
+{
+    Player* player = world.getPlayer();
+    Item* item = nullptr;
+
+    std::vector<Item*> inventory = player->getInventory();
+
+    for (Item* inventoryItem : inventory)
+    {
+        if (inventoryItem->getName() == itemName)
+        {
+            item = inventoryItem;
+            break;
+        }
+    }
+
+    if (item == nullptr)
+    {
+        std::cout << "You do not have a " << itemName << ".\n";
+        return;
+    }
+
+    if (itemName == "lantern")
+    {
+        std::cout << "You light the lantern. The darkness no longer frightens you.\n";
+    }
+    else if (itemName == "map")
+    {
+        std::cout << "\nMansion Map\n";
+        std::cout << "                 Library\n";
+        std::cout << "                    |\n";
+        std::cout << "Master Bedroom -- Second Floor\n";
+        std::cout << "                    |\n";
+        std::cout << "Office -- Entrance Hall -- Kitchen\n";
+        std::cout << "              |\n";
+        std::cout << "         Outside Porch\n";
+    }
+   else if (itemName == "key")
+{
+    Room* currentRoom = player->getCurrentRoom();
+
+    if (currentRoom->getName() != "Second Floor")
+    {
+        std::cout << "You hold the key, but there is no locked door here.\n";
+        return;
+    }
+
+    std::vector<Exit*> exits = currentRoom->getExits();
+
+    for (Exit* exit : exits)
+    {
+        if (exit->getName() == "Master Bedroom Door")
+        {
+            exit->setLocked(false);
+            std::cout << "You unlock the Master Bedroom Door.\n";
+            return;
+        }
+    }
+
+    std::cout << "There is no locked door here.\n";
+    }
+    else if (itemName == "musicbox")
+{
+    Room* currentRoom = player->getCurrentRoom();
+
+    if (currentRoom->getName() != "Master Bedroom")
+    {
+        std::cout << "You wind the music box, but nothing happens.\n";
+        return;
+    }
+
+    std::cout << "\nThe music box begins to play.\n";
+    std::cout << "A gentle melody fills the room.\n";
+    std::cout << "The ghost slowly appears before you.\n";
+    std::cout << "Its expression changes from sorrow to peace.\n";
+    std::cout << "With one final smile, the ghost fades into the light.\n\n";
+
+    endGame();
+}
+}
+
+
+bool Game::checkWinCondition()
+{
+
+    return false;
+}
+
+
+void Game::endGame()
+{
+    std::cout << "You helped the sad ghost find freedom.\n";
+    std::cout << "Congratulations! You have completed the game.\n";
+
+    running = false;
+}
+
+   
