@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Enity.h"
+#include "Entity.h"
 
-class Creature : Public Entity
+class Creature : public Entity
 {
 public:
     Creature(std::string name, std::string description);
